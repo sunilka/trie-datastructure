@@ -1,4 +1,4 @@
-//implementing the trie solution here
+// implementing the trie data struture
 #include<bits/stdc++.h>
 using namespace std;
 
@@ -8,88 +8,103 @@ struct node
     bool isend;
 };
 
-struct node* getnode()
+struct node *getnode()
 {
     struct node *newnode = (struct node*)malloc(sizeof(struct node));
-    newnode->isend = false;
     for(int i=0;i<26;i++){
         newnode->character[i] = NULL;
     }
+    newnode->isend = false;
     return newnode;
 }
 
-void add(struct node *root,string s)
+void add(struct node *head,string s)
 {
-    struct node *temp = root;
+    struct node *temp = head;
     for(int i=0;i<s.length();i++){
-        int index = (int)s[i] - (int)'a';
-        if(temp->character[index]==NULL)
+        int index = s[i] - (int)'a';
+        if(temp->character[index]==NULL){
             temp->character[index] = getnode();
+        }
         temp = temp->character[index];
-        temp->isend = false;
     }
     temp->isend = true;
 }
 
-void display(struct node *root,char s[],int index)
+void display(struct node *head,string s)
 {
-    if(root->isend == true){
-        s[index] = '\0';
+    if(head->isend == true){
         cout<<s<<endl;
-        return;
     }
 
     for(int i=0;i<26;i++){
-        if(root->character[i]!=NULL){
-            char c = i + 'a';
-            s[index] = c;
-            display(root->character[i],s,index+1);
+        if(head->character[i]!=NULL){
+            char c = i+'a';
+            display(head->character[i],s+c);
         }
     }
-    return;
 }
 
-void see(struct node *root,string s)
+void cal(struct node *temp,string pre)
 {
-    struct node *temp = root;
-    for(int i=0;i<s.length();i++){
-        int index = (int)s[i] - (int)'a';
-        if(temp->character[index] == NULL){
-            cout<<"\n Sorry !!! no relevant prefix matches found :( \n";
+    if(temp->isend == true){
+        cout<<pre<<endl;
+    }
+
+    for(int i=0;i<26;i++){
+         if(temp->character[i]!=NULL){
+            char c = i+'a';
+            display(temp->character[i],pre+c);
+        }
+    }
+}
+
+
+void trie_search(struct node *head,string pre)
+{
+    struct node *temp = head;
+    for(int i=0;i<pre.length();i++){
+        int index = pre[i] - (int)'a';
+        if(temp->character[index]==NULL){
+            cout<<"Sorry !!! No such prefix is found in the trie "<<endl;
             return;
         }
         temp = temp->character[index];
     }
-    char ss[100];
-    for(int i=0;i<s.length();i++){
-        ss[i] = s[i];
-    }
-    int n = s.length();
-    display(temp,ss,n);
+
+    cal(temp,pre);
 }
+
+void solve()
+{
+    int n;
+    cout<<"please enter the number of strings :\n";
+    cin>>n;
+
+    struct node *head = getnode();
+    while(n--){
+        string s;
+        cin>>s;
+        add(head,s);
+    }
+
+    cout<<"Printing the trie elements here \n";
+    string s = "";
+    display(head,s);
+
+    string pre;
+    cout<<"Please enter the prefix for search : "<<endl;
+    cin>>pre;
+
+    trie_search(head,pre);
+}
+
 
 int main()
 {
-    int nooftestcases;
-    cin>>nooftestcases;
-
-    while(nooftestcases--){
-
-        struct node *root = getnode();
-        for(int i=0;i<5;i++){
-            string temp;
-            cin>>temp;
-            add(root,temp);
-        }
-        printf("\n printing the trie data structure here \n");
-        char s[100];
-        display(root,s,0);
-
-        printf("\n please enter the prefix computation string \n");
-        string pre;
-        cin>>pre;
-        see(root,pre);
-        printf("\n printing the results according to the prefix's :\n");
-        free(root);
+    int t;
+    cin>>t;
+    while(t--){
+        solve();
     }
 }
